@@ -1,14 +1,14 @@
 <template>
     <div class="home_nav">
         <ul class="mod_ul">
-            <li class="mod_li active_li"  @click="changeNav($event)">
-                <router-link to='/home'  >推荐</router-link>
+            <li   >
+                <router-link to='/home'  class="mod_a">推荐</router-link>
             </li>
-            <li class="mod_li" :class="{active_li:!flg}" @click="changeNav($event)">
-                <router-link to='/rank'>排行榜</router-link>
+            <li  >
+                <router-link to='/rank' class="mod_a">排行榜</router-link>
             </li>
-            <li class="mod_li" :class="{active_li:!flg}" @click="changeNav($event)">
-                <router-link to='/search'>搜索</router-link>
+            <li  >
+                <router-link to='/search' class="mod_a">搜索</router-link>
             </li>
         </ul>
     </div>
@@ -21,10 +21,6 @@ export default {
         }
     },
     methods: {
-        changeNav(e){
-            e.currentTarget.classList.add('active_li')
-            // e.currentTarget.nextSibling.classList.remove('active_li')
-        }
     }
 }
 </script>
@@ -36,7 +32,7 @@ export default {
     display: flex;
     justify-content: space-evenly;
 }
-.mod_li {
+.mod_ul li{
     -webkit-box-flex: 1;
     position: relative;
     display: block;
@@ -47,7 +43,13 @@ export default {
     font-size: 16px;
     width: 33.33%;
 }
-.active_li{
+.mod_a {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    width: 100%;
+}
+.router-link-active{
     color: #31c27c ;
     border-bottom: 2px solid #31c27c;
 }

@@ -6,12 +6,33 @@
             </div>
             <div class="search_bar_tip_text" v-if="!searchFlg" @click="handleDel">取消</div>
         </div>
+        <!-- 热门搜索 -->
         <div class="mod_search_result" v-if="searchFlg">
             <h3 class="result_tit">热门搜索</h3>
             <div class="result_tags">
                 <!-- 这里进行判断当循环元素的index=0激活tag_hot样式 -->
                 <span class="tag_s " :class="{tag_hot:index===0 ? true:false}" @click="handleHotSearch(index,hot.name)" v-for="(hot,index) in hotSearchs" :key="index">{{hot.name}}</span>
             </div>        
+        </div>
+        <!-- 历史搜索 -->
+        <div id="focus_wrapper" style="" v-if="!searchFlg">
+            <div id="record_keys" class="mod_search_record" style="">
+                <li v-for="item in getLocalArr" :key="item">
+                    <a href="javascript:;" class="js_keyword record_main">
+                        <!-- <span class="icon iocn_clock"></span> -->
+                        <span class="js_keyword record_con">{{item}}</span>
+                        <span class="js_del_record icon icon_close">X</span>
+                    </a>
+                </li>
+                <p id="record_clear_btn" class="record_handle">
+                    <a href="javascript:;">清除搜索记录</a>
+                </p>
+            </div>
+            <div id="search_result" class="mod_search_content"></div>
+            <div id="loading" class="mod_loading" style="display: none;">
+                <i class="loading__icon"></i>
+                <span class="loading__text">正在载入更多...</span>
+            </div>
         </div>
         <!-- 搜索列表 -->
         <div class="mod_search_content" v-if='!searchFlg'>
@@ -29,6 +50,8 @@
 </template>
 <script>
 import {searchSongs} from '@/api/index.js'
+
+let localArr = [];
 export default {
     data() {
         return {
@@ -41,12 +64,27 @@ export default {
                 {id:3 ,name:'生僻字'},
                 {id:4 ,name:'圣诞歌英文儿歌'},
                 {id:5 ,name:'我对自己开了一枪'},
-            ]
+            ],
+            getLocalArr:[]
         }
     },
     watch:{
         searchValue(newVal) {
             if(newVal !== '' || newVal !== null) {
+                
+                localArr.push(newVal)
+                let setArr = new Set(localArr)
+                let resetArr = Array.from(setArr)
+                // console.log(resetArr)
+                // 存储到localStorage中
+                window.localStorage.setItem('saveResetArr',resetArr)
+                //存储完之后立马获取赋值
+                let getLocalStr = window.localStorage.getItem('saveResetArr')
+                let Arr = getLocalStr.split(',').filter((item) => {
+                    return item !='' 
+                })
+                this.getLocalArr = Arr
+                // console.log(this.getLocalArr)
                 searchSongs(`search?key=579621905&s=${newVal}&limit=20&offset=0&type=song`).then((value) => {
                     this.searchSongs = value.data
                 })
@@ -58,11 +96,13 @@ export default {
     methods:{
         handleInp() {
             this.searchFlg = false
+            
         },
         handleDel() {
             this.searchFlg = true
-            this.searchValue = ''
+            this.searchValue = null
             this.searchSongs = {}
+
         },
         handleHotSearch(i,name) {
             this.searchValue = name
@@ -177,6 +217,39 @@ export default {
 .mod_search_content .sub_tit {
     color: #808080;
     font-size: 14px
+}
+.mod_search_record {
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600
+}
+.mod_search_record li {
+    border-top: 1px solid #ededed;
+    padding: 0 15px;
+}
+.record_main {
+    position: relative;
+    display: block;
+    height: 44px;
+    line-height: 44px;
+    display: flex;
+    justify-content: space-between
+}
+.record_handle {
+    text-align: center;
+    height: 44px;
+    line-height: 44px;
+}
+.mod_loading {
+    position: relative;
+    height: 55px;
+    line-height: 55px;
+    text-align: center;
+}
+.loading__text {
+    margin-left: 5px;
+    font-size: 12px;
+    color: #808080;
 }
 </style>
 
